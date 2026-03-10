@@ -1,0 +1,2043 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monopoly Game UI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* CSS RESET */
+        
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        /* Custom variables for colors and styles */
+        
+         :root {
+            --primary-color: #1a4d3a;
+            /* Deep Green */
+            --secondary-color: #f7e6a6;
+            /* Cream/Old Paper */
+            --accent-color: #e53e3e;
+            /* Red for emphasis */
+            --dark-bg: #111827;
+            /* Equivalent to bg-gray-900/bg-gray-800 context */
+            --text-light: #e5e7eb;
+            /* Equivalent to text-gray-200 */
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            min-height: 100vh;
+            padding: 1rem;
+            /* p-4 */
+        }
+        
+        @media (min-width: 768px) {
+            body {
+                padding: 2rem;
+            }
+        }
+        /*
+        ## Header/Player Status
+        */
+        
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            /* p-4 */
+            margin-bottom: 1.5rem;
+            /* mb-6 */
+            background-color: #1f2937;
+            /* bg-gray-800 */
+            border-radius: 0.75rem;
+            /* rounded-xl */
+            border-bottom: 4px solid #374151;
+            /* border-b-4 border-gray-700 */
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            /* shadow-2xl */
+        }
+        
+        .player-panel {
+            padding: 0.75rem;
+            /* p-3 */
+            border-radius: 0.75rem;
+            /* rounded-xl */
+            color: white;
+            /* text-white */
+            font-weight: 900;
+            /* font-extrabold */
+            width: 33.333333%;
+            /* w-1/3 */
+            text-align: center;
+            transition: all 0.3s ease;
+            /* transition-all duration-300 */
+            cursor: default;
+        }
+        
+        .player-panel:hover {
+            transform: scale(1.02);
+            /* hover:scale-[1.02] */
+        }
+        
+        .player-panel-1 {
+            background-color: #047857;
+            /* bg-green-700 */
+            box-shadow: 0 0 15px var(--accent-color);
+            /* player-panel-glow */
+        }
+        
+        .player-panel-2 {
+            background-color: #b91c1c;
+            /* bg-red-700 */
+            box-shadow: 0 0 15px var(--accent-color);
+            /* player-panel-glow */
+        }
+        
+        .player-panel h2 {
+            font-size: 1.25rem;
+            /* text-xl */
+            letter-spacing: 0.05em;
+            /* tracking-wider */
+        }
+        
+        .player-panel p {
+            font-size: 1.875rem;
+            /* text-3xl */
+            color: #fcd34d;
+            /* text-yellow-300 */
+        }
+        
+        @media (min-width: 768px) {
+            .player-panel h2 {
+                font-size: 1.5rem;
+                /* md:text-2xl */
+            }
+            .player-panel p {
+                font-size: 2.25rem;
+                /* md:text-4xl */
+            }
+        }
+        
+        .game-title {
+            font-size: 1.875rem;
+            /* text-3xl */
+            font-weight: 900;
+            /* font-black */
+            color: #facc15;
+            /* text-yellow-400 */
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            /* tracking-widest */
+            text-align: center;
+            margin-left: 1rem;
+            /* mx-4 */
+            margin-right: 1rem;
+            margin-bottom: 85px;
+        }
+        
+        @media (min-width: 768px) {
+            .game-title {
+                font-size: 2rem;
+                /* md:text-5xl */
+            }
+        }
+        /*
+        ## Main Layout (Grid)
+        */
+        
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            /* grid-cols-1 */
+            gap: 1.5rem;
+            /* gap-6 */
+        }
+        
+        @media (min-width: 1024px) {
+            .main-layout {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .sidebar-left {
+                order: 1;
+                /* lg:order-1 */
+            }
+            .board-container-wrap {
+                order: 2;
+                /* lg:order-2 */
+            }
+            .sidebar-right {
+                order: 3;
+                /* lg:order-3 */
+            }
+        }
+        /*
+        ## Sidebars
+        */
+        /* ✅ FINAL FIX: horizontal alignment */
+        /* ✅ Sidebar + Board Alignment (Full Height + Fixed Width) */
+        
+        .main-layout {
+            display: grid !important;
+            grid-template-columns: 300px 1fr 300px !important;
+            /* sidebar width badha di */
+            grid-template-rows: 1fr !important;
+            align-items: stretch !important;
+            /* 🔥 sidebars full height */
+            justify-items: center !important;
+            height: calc(100vh - 180px) !important;
+            /* adjust header height if needed */
+            gap: 1.5rem !important;
+        }
+        /* ✅ Left Sidebar */
+        
+        .sidebar-left {
+            grid-column: 1 !important;
+            grid-row: 1 !important;
+            align-self: stretch !important;
+            /* full height */
+            width: 100% !important;
+            max-width: 1200px !important;
+        }
+        /* ✅ Center Board */
+        
+        .board-container-wrap {
+            grid-column: 2 !important;
+            grid-row: 1 !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+        }
+        /* ✅ Right Sidebar */
+        
+        .sidebar-right {
+            grid-column: 3 !important;
+            grid-row: 1 !important;
+            align-self: stretch !important;
+            /* full height */
+            width: 100% !important;
+            max-width: 1200px;
+        }
+        
+        .main-layout {
+            display: grid;
+            grid-template-columns: 250px auto 250px;
+            /* left | board | right */
+            align-items: center;
+            justify-items: center;
+            height: calc(100vh - 180px);
+            /* adjust according to your header height */
+            gap: 1rem;
+            /* overflow: hidden; */
+        }
+        /*         
+        .sidebar-left {
+            grid-column: 1;
+        }
+        
+        .board-container-wrap {
+            grid-column: 2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .sidebar-right {
+            grid-column: 3;
+        } */
+        /* .board-container {
+            width: 80vmin;
+            height: 80vmin;
+        } */
+        
+        html body {
+            margin: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .sidebar {
+            background-color: #1f2937;
+            /* bg-gray-800 */
+            padding: 1rem;
+            /* p-4 */
+            border-radius: 0.75rem;
+            /* rounded-xl */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            /* shadow-lg */
+            min-height: 300px;
+            /* min-h-[300px] */
+            order: 2;
+            /* default order for mobile/tablet */
+        }
+        
+        .sidebar-left {
+            border-left: 4px solid #10b981;
+            /* border-l-4 border-green-500 */
+            height: 185px;
+        }
+        
+        .sidebar-right {
+            border-right: 4px solid #ef4444;
+            /* border-r-4 border-red-500 */
+            order: 3;
+            /* default order for mobile/tablet */
+            height: 185px;
+        }
+        
+        .sidebar h3 {
+            font-size: 1.25rem;
+            /* text-xl */
+            font-weight: 700;
+            /* font-bold */
+            margin-bottom: 0.75rem;
+            /* mb-3 */
+            padding-bottom: 0.5rem;
+            /* pb-2 */
+            border-bottom: 1px solid #4b5563;
+            /* border-b */
+        }
+        
+        .sidebar-left h3 {
+            color: #4ade80;
+            /* text-green-400 */
+        }
+        
+        .sidebar-right h3 {
+            color: #f87171;
+            /* text-red-400 */
+        }
+        
+        .log-container {
+            font-size: 0.875rem;
+            /* text-sm */
+            line-height: 1.5;
+            /* space-y-1 */
+            overflow-y: auto;
+            max-height: 24rem;
+            /* max-h-96 */
+        }
+        
+        @media (min-width: 1024px) {
+            .log-container {
+                max-height: 600px;
+                /* lg:max-h-[600px] */
+            }
+        }
+        
+        .log-container p {
+            color: #9ca3af;
+            /* text-gray-400 */
+        }
+        
+        .log-container .log-start {
+            color: #6ee7b7;
+            /* text-green-300 */
+        }
+        
+        .log-container .log-action {
+            color: #fcd34d;
+            /* text-yellow-300 */
+        }
+        
+        .log-container .log-loss {
+            color: #f87171;
+            /* text-red-400 */
+        }
+        /*
+        ## Game Board (CSS Grid)
+        */
+        
+        .board-container-wrap {
+            order: 2;
+            /* default order for mobile/tablet */
+        }
+        
+        .board-container {
+            /* Define the 11x11 grid for the board */
+            display: grid;
+            grid-template-columns: repeat(11, minmax(0, 1fr));
+            grid-template-rows: repeat(11, minmax(0, 1fr));
+            max-width: 900px;
+            /* Max size for a comfortable board */
+            max-height: 900px;
+            aspect-ratio: 1 / 1;
+            margin: 0 auto;
+            border-radius: 1.5rem;
+            /* rounded-3xl */
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(229, 59, 59, 0.7);
+            /* shadow-[0_0_50px_rgba(229,59,59,0.7)] */
+        }
+        
+        @media (max-width: 768px) {
+            .board-container {
+                max-width: 100vw;
+            }
+        }
+        /* Generic Space styles (renamed from .space to .human) */
+        
+        .human {
+            border: 2px solid #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--secondary-color);
+            color: #1a4d3a;
+            font-size: 0.6rem;
+            text-align: center;
+            padding: 2px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        
+        .human span {
+            line-height: 1.1;
+        }
+        
+        .human .font-bold {
+            font-weight: 700;
+        }
+        
+        .human .text-xs {
+            font-size: 0.6rem;
+        }
+        
+        .human .mt-auto {
+            margin-top: auto;
+        }
+        
+        .human .w-full {
+            width: 100%;
+        }
+        
+        .human .flex-justify-around {
+            display: flex;
+            justify-content: space-around;
+        }
+        
+        .token {
+            height: 0.75rem;
+            /* h-3 */
+            width: 0.75rem;
+            /* w-3 */
+            border-radius: 9999px;
+            /* rounded-full */
+            border: 1px solid #1a4d3a;
+        }
+        
+        .token-p1 {
+            background-color: #047857;
+            /* bg-green-700 (Close to P1's panel) */
+        }
+        
+        .token-p2 {
+            background-color: #b91c1c;
+            /* bg-red-700 (Close to P2's panel) */
+        }
+        /* Corner spaces are larger */
+        
+        .corner {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            background-color: #c9e4c9;
+            position: relative;
+        }
+        
+        .corner img {
+            height: 21px;
+            /* h-8 */
+            width: 36px;
+            /* w-8 */
+        }
+        
+        .top-left {
+            grid-column: 1 / 2;
+            grid-row: 1 / 2;
+            border-top: 4px solid #000;
+            border-left: 4px solid #000;
+            background-color: #facc15;
+        }
+        
+        .top-left .text-xl {
+            font-size: 1.25rem;
+        }
+        
+        .top-right {
+            grid-column: 11 / 12;
+            grid-row: 1 / 2;
+            border-top: 4px solid #000;
+            border-right: 4px solid #000;
+            background-color: #ef4444;
+        }
+        
+        .bottom-left {
+            grid-column: 1 / 2;
+            grid-row: 11 / 12;
+            border-bottom: 4px solid #000;
+            border-left: 4px solid #000;
+            background-color: #93c5fd;
+        }
+        
+        .bottom-right {
+            grid-column: 11 / 12;
+            grid-row: 11 / 12;
+            border-bottom: 4px solid #000;
+            border-right: 4px solid #000;
+            background-color: #34d399;
+            /* bg-green-500 */
+        }
+        /* Corner specific overrides */
+        
+        .bottom-left .text-xl {
+            font-size: 1.25rem;
+            transform: rotate(-45deg);
+        }
+        
+        .bottom-left .text-xs {
+            font-size: 0.6rem;
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+        }
+        
+        .bottom-left img {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            transform: rotate(12deg);
+        }
+        
+        .top-right .text-xl {
+            font-size: 1.25rem;
+            transform: rotate(45deg);
+        }
+        /* Center area */
+        
+        .center-area {
+            grid-column: 2 / 11;
+            grid-row: 2 / 11;
+            background-color: var(--primary-color);
+            border: 12px solid #e5e7eb;
+            /* White frame for the board */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--secondary-color);
+            padding: 1rem;
+            font-size: 1.5rem;
+            font-weight: 900;
+            text-shadow: 2px 2px #000;
+            border-radius: 1rem;
+            /* rounded-2xl */
+        }
+        
+        .center-area p:first-child {
+            font-size: 0.75rem;
+            /* text-xs */
+            text-align: center;
+            margin-bottom: 0.5rem;
+            /* mb-2 */
+            font-weight: 400;
+        }
+        
+        .center-area img {
+            height: 4rem;
+            /* h-16 */
+            margin-bottom: -10px;
+            /* mb-4 */
+        }
+        
+        .center-area p:nth-child(3) {
+            font-size: 0.875rem;
+            /* text-sm */
+            font-weight: 300;
+            /* font-light */
+            text-align: center;
+        }
+        
+        .dice-display {
+            margin-top: 1rem;
+            /* mt-4 */
+            padding: 0.5rem;
+            /* p-2 */
+            background-color: rgba(17, 24, 39, 0.5);
+            /* bg-gray-900/50 */
+            border-radius: 0.5rem;
+            /* rounded-lg */
+        }
+        
+        .dice-display p {
+            font-size: 1.25rem;
+            /* text-xl */
+            text-shadow: none;
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+        
+        .dice-display span {
+            color: #f7e6a6;
+            /* text-yellow-300 */
+        }
+        /* Styling for property color bars */
+        
+        .color-bar {
+            height: 10px;
+            width: 100%;
+            border-bottom: 2px solid #000;
+        }
+        /* Utility classes for responsive grid placement */
+        /* Top and Bottom properties are horizontal */
+        
+        .side-space-horizontal {
+            flex-direction: column;
+            width: 100%;
+        }
+        /* Left and Right properties are vertical */
+        
+        .side-space-vertical {
+            flex-direction: row-reverse;
+            /* Pushes the color bar to the outside edge */
+            height: 100%;
+        }
+        
+        .side-space-vertical .color-bar {
+            width: 10px;
+            height: 100%;
+            border-bottom: none;
+            border-right: 2px solid #000;
+        }
+        /* Specific property coloring for demonstration */
+        
+        .brown {
+            background-color: #8b4513;
+        }
+        
+        .light-blue {
+            background-color: #87ceeb;
+        }
+        
+        .pink {
+            background-color: #ffc0cb;
+        }
+        
+        .orange {
+            background-color: #ffa500;
+        }
+        
+        .red {
+            background-color: #ff0000;
+        }
+        
+        .yellow {
+            background-color: #ffff00;
+        }
+        
+        .green {
+            background-color: #008000;
+        }
+        
+        .dark-blue {
+            background-color: #00008b;
+        }
+        /* Board Space Positioning - Keep these original custom styles for grid placement */
+        /* Top row properties */
+        
+        .board-container> :nth-child(n + 21):nth-child(-n + 29) {
+            /* Starts at 21, ends at 29 in the original HTML structure */
+            grid-row: 1 / 2;
+        }
+        
+        .board-container> :nth-child(21) {
+            grid-column: 2 / 3;
+        }
+        
+        .board-container> :nth-child(22) {
+            grid-column: 3 / 4;
+        }
+        
+        .board-container> :nth-child(23) {
+            grid-column: 4 / 5;
+        }
+        
+        .board-container> :nth-child(24) {
+            grid-column: 5 / 6;
+        }
+        
+        .board-container> :nth-child(25) {
+            grid-column: 6 / 7;
+        }
+        
+        .board-container> :nth-child(26) {
+            grid-column: 7 / 8;
+        }
+        
+        .board-container> :nth-child(27) {
+            grid-column: 8 / 9;
+        }
+        
+        .board-container> :nth-child(28) {
+            grid-column: 9 / 10;
+        }
+        
+        .board-container> :nth-child(29) {
+            grid-column: 10 / 11;
+        }
+        
+        .board-container> :nth-child(n + 12):nth-child(-n + 19) {
+            grid-column: 1 / 2;
+        }
+        
+        .board-container> :nth-child(12) {
+            grid-row: 10 / 11;
+        }
+        
+        .board-container> :nth-child(13) {
+            grid-row: 9 / 10;
+        }
+        
+        .board-container> :nth-child(14) {
+            grid-row: 8 / 9;
+        }
+        
+        .board-container> :nth-child(15) {
+            grid-row: 7 / 8;
+        }
+        
+        .board-container> :nth-child(16) {
+            grid-row: 6 / 7;
+        }
+        
+        .board-container> :nth-child(17) {
+            grid-row: 5 / 6;
+        }
+        
+        .board-container> :nth-child(18) {
+            grid-row: 4 / 5;
+        }
+        
+        .board-container> :nth-child(19) {
+            grid-row: 3 / 4;
+        }
+        
+        .board-container> :nth-child(20) {
+            grid-row: 2 / 3;
+        }
+        
+        .board-container> :nth-child(n + 2):nth-child(-n + 10) {
+            grid-row: 11 / 12;
+        }
+        
+        .board-container> :nth-child(2) {
+            grid-column: 10 / 11;
+        }
+        
+        .board-container> :nth-child(3) {
+            grid-column: 9 / 10;
+        }
+        
+        .board-container> :nth-child(4) {
+            grid-column: 8 / 9;
+        }
+        
+        .board-container> :nth-child(5) {
+            grid-column: 7 / 8;
+        }
+        
+        .board-container> :nth-child(6) {
+            grid-column: 6 / 7;
+        }
+        
+        .board-container> :nth-child(7) {
+            grid-column: 5 / 6;
+        }
+        
+        .board-container> :nth-child(8) {
+            grid-column: 4 / 5;
+        }
+        
+        .board-container> :nth-child(9) {
+            grid-column: 3 / 4;
+        }
+        
+        .board-container> :nth-child(10) {
+            grid-column: 2 / 3;
+        }
+        
+        .board-container> :nth-child(n + 31):nth-child(-n + 39) {
+            grid-column: 11 / 12;
+        }
+        
+        .board-container> :nth-child(31) {
+            grid-row: 2 / 3;
+        }
+        
+        .board-container> :nth-child(32) {
+            grid-row: 3 / 4;
+        }
+        
+        .board-container> :nth-child(33) {
+            grid-row: 4 / 5;
+        }
+        
+        .board-container> :nth-child(34) {
+            grid-row: 5 / 6;
+        }
+        
+        .board-container> :nth-child(35) {
+            grid-row: 6 / 7;
+        }
+        
+        .board-container> :nth-child(36) {
+            grid-row: 7 / 8;
+        }
+        
+        .board-container> :nth-child(37) {
+            grid-row: 8 / 9;
+        }
+        
+        .board-container> :nth-child(38) {
+            grid-row: 9 / 10;
+        }
+        
+        .board-container> :nth-child(39) {
+            grid-row: 10 / 11;
+        }
+        
+        .board-container-wrap {
+            order: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+        
+        .board-container {
+            display: grid;
+            grid-template-columns: repeat(11, minmax(0, 1fr));
+            grid-template-rows: repeat(11, minmax(0, 1fr));
+            width: 90vmin;
+            height: 90vmin;
+            margin: 0 auto;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(229, 59, 59, 0.7);
+            background-color: var(--secondary-color);
+        }
+        /* @media (max-width: 768px) {
+            .board-container {
+                width: 95vmin;
+                height: 95vmin;
+            }
+    } */
+        
+         :root {
+            --btn-bg: #ffffff;
+            --btn-border: #d1d5db;
+            --btn-text: #111827;
+            --btn-hover-bg: #f3f4f6;
+            --btn-focus-ring: #60a5fa;
+            --btn-padding-y: 6px;
+            --btn-padding-x: 10px;
+            --btn-font-size: 13px;
+            --btn-radius: 8px;
+            --btn-gap: 10px;
+            --btn-shadow: 0 1px 0 rgba(0, 0, 0, 0.03);
+        }
+        
+        .controls {
+            display: inline-flex;
+            gap: var(--btn-gap);
+            align-items: center;
+            padding: 6px;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: 1px solid var(--btn-border);
+            padding: var(--btn-padding-y) var(--btn-padding-x);
+            font-size: var(--btn-font-size);
+            border-radius: var(--btn-radius);
+            cursor: pointer;
+            box-shadow: var(--btn-shadow);
+            transition: transform .06s ease, background .12s ease, box-shadow .12s ease;
+            user-select: none;
+        }
+        /* small variant */
+        
+        .btn-small {
+            padding: 5px 15px;
+            font-size: 12px;
+            border-radius: 6px;
+            min-width: 100px;
+            /* ensures compact but clickable targets */
+            height: 50px;
+            /* width: 10%; */
+        }
+        /* hover */
+        
+        .btn:hover {
+            background: var(--btn-hover-bg);
+            transform: translateY(-1px);
+        }
+        /* subtle active press */
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        /* keyboard focus (accessible) */
+        
+        .btn:focus-visible {
+            outline: 3px solid transparent;
+            /* remove default but keep focus */
+            box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.16), 0 1px 0 rgba(0, 0, 0, 0.03);
+            /* border-color: var(--btn-focus-ring); */
+        }
+        /* focus for older browsers */
+        
+        .btn:focus {
+            outline: none;
+        }
+        /* optional: different color for forward/back to make meaning clear */
+        
+        #move-back {
+            /* --btn-bg: #fff;  */
+        }
+        
+        #move-forward {
+            --btn-bg: #fff;
+        }
+        /* responsive: scale down slightly on very small screens */
+        
+        @media (max-width: 360px) {
+            .btn-small {
+                min-width: 56px;
+                font-size: 11px;
+                height: 30px;
+            }
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.6s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .modal-content {
+            background: linear-gradient(145deg, #fff9e6, #ffffff);
+            border: 3px solid gold;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            width: 700px;
+            padding: 25px 30px;
+            animation: popUp 0.5s ease-in-out;
+        }
+        
+        @keyframes popUp {
+            0% {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .modal-content h3 {
+            font-family: "Poppins", sans-serif;
+            font-size: 24px;
+            color: #b58900;
+            text-shadow: 0 0 4px rgba(255, 215, 0, 0.6);
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+        
+        .token-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .token {
+            width: 120px;
+            height: 165px;
+            object-fit: cover;
+            cursor: pointer;
+            border: 3px solid transparent;
+            border-radius: 12px;
+            /* box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); */
+            transition: all 0.3s ease;
+        }
+        
+        .token:hover {
+            /* border-color: greenyellow; */
+            /* box-shadow: 0 0 12px green(255, 215, 0, 0.9); */
+            /* transform: scale(1.1); */
+        }
+        
+        .token:active {
+            transform: scale(0.97);
+            filter: brightness(0.9);
+        }
+        /* .modal-content::before {
+            content: "";
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            border-radius: 15px;
+            background: linear-gradient(45deg, gold, #ffd700, #fff7b1, gold);
+            z-index: -1;
+            opacity: 0.6;
+        } */
+        
+        .token-p1,
+        .token-p2 {
+            background: none !important;
+            border: none !important;
+            outline: none !important;
+        }
+        
+        .token-p1:focus,
+        .token-p2:focus,
+        .token-p1:active,
+        .token-p2:active {
+            background: none !important;
+            outline: none !important;
+        }
+        /* 🌆 Background overlay for modal */
+        
+        #propertyModal {
+            display: none;
+            /* hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 10, 0.6);
+            backdrop-filter: blur(6px);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        /* 💎 Modal content box */
+        
+        #propertyModal .modal-content {
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+            padding: 25px 35px;
+            text-align: center;
+            width: 320px;
+            animation: popIn 0.4s ease-out;
+            position: relative;
+            font-family: "Poppins", sans-serif;
+        }
+        /* ✨ Animated fade-in */
+        
+        @keyframes popIn {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        /* 🏠 Property name */
+        
+        #propertyModal h2 {
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        /* 💬 Status text */
+        
+        #propertyModal p {
+            font-size: 15px;
+            color: #555;
+            margin-bottom: 20px;
+        }
+        /* 🧱 Button container */
+        
+        #propertyButtons {
+            display: flex;
+            justify-content: space-around;
+            gap: 10px;
+        }
+        /* 🪙 Buttons style */
+        
+        #propertyButtons button {
+            flex: 1;
+            padding: 10px 0;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-weight: 600;
+        }
+        /* 🟩 Buy */
+        
+        #buyProperty {
+            background: linear-gradient(135deg, #00c853, #64dd17);
+            color: white;
+        }
+        
+        #buyProperty:hover {
+            box-shadow: 0 0 10px rgba(0, 200, 83, 0.6);
+            transform: translateY(-2px);
+        }
+        /* 🟥 Pay Rent */
+        
+        #payRent {
+            background: linear-gradient(135deg, #ff1744, #ff5252);
+            color: white;
+        }
+        
+        #payRent:hover {
+            box-shadow: 0 0 10px rgba(255, 23, 68, 0.6);
+            transform: translateY(-2px);
+        }
+        /* 🟨 Skip */
+        
+        #skipProperty {
+            background: linear-gradient(135deg, #ffc400, #ffd740);
+            color: #333;
+        }
+        
+        #skipProperty:hover {
+            box-shadow: 0 0 10px rgba(255, 196, 0, 0.6);
+            transform: translateY(-2px);
+        }
+        /* ✖ Optional close effect */
+        
+        #propertyModal::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 15px;
+            pointer-events: none;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0.05));
+        }
+        /* 🏦 Premium Bank Button */
+        /* 🌫 Modal Background */
+        
+        .bank-modal {
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(3px);
+            justify-content: center;
+            align-items: center;
+        }
+        /* 🏦 Modal Content Box */
+        
+        .bank-modal-content {
+            background: linear-gradient(145deg, #f3f5f8 0%, #dbe2e8 100%);
+            width: 450px;
+            padding: 30px 40px;
+            border-radius: 18px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+            font-family: "Poppins", sans-serif;
+            color: #1f2937;
+            text-align: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+        /* Title */
+        
+        .bank-modal-content h2 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: #0f172a;
+        }
+        /* Balance Display */
+        
+        .bank-modal-content h3 {
+            font-size: 18px;
+            margin-bottom: 18px;
+            color: #2563eb;
+            font-weight: 600;
+        }
+        /* Info Box */
+        
+        .bank-info-box {
+            background: linear-gradient(145deg, #ffffff, #e7edf2);
+            border: 1px solid #cfd6dc;
+            border-radius: 14px;
+            padding: 18px;
+            text-align: left;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+            min-height: 150px;
+            margin-bottom: 20px;
+        }
+        
+        .bank-info-box p {
+            font-size: 14px;
+            margin: 6px 0;
+            color: #374151;
+            line-height: 1.6;
+        }
+        
+        .bank-info-box strong {
+            color: #0d47a1;
+        }
+        /* Close Button */
+        
+        #closeBankModal {
+            background: linear-gradient(135deg, #4f46e5, #3b82f6);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+        
+        #closeBankModal:hover {
+            background: linear-gradient(135deg, #6366f1, #60a5fa);
+            transform: translateY(-1px);
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        /* 💎 Blue Bank Button */
+        
+        #bankButton {
+            background: linear-gradient(135deg, #2196F3, #0D47A1);
+            color: #ffffff;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 16px;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 25px;
+            cursor: pointer;
+            /* box-shadow: 0 4px 10px rgba(33, 150, 243, 0.4), inset 0 -2px 4px rgba(0, 0, 0, 0.2); */
+            transition: all 0.25s ease;
+            letter-spacing: 0.5px;
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+        }
+        /* 🌀 Hover Effect */
+        
+        #bankButton:hover {
+            background: linear-gradient(135deg, #42A5F5, #1565C0);
+            box-shadow: 0 0 15px rgba(66, 165, 245, 0.8), 0 0 30px rgba(21, 101, 192, 0.6);
+            transform: translateY(-2px);
+        }
+        /* 🔘 Active / Pressed Effect */
+        
+        #bankButton:active {
+            transform: translateY(1px);
+            box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.25);
+        }
+        /* ✨ Optional glowing animation (for idle pulsing effect) */
+        
+        @keyframes bluePulse {
+            0% {
+                box-shadow: 0 0 8px rgba(33, 150, 243, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(33, 150, 243, 0.9);
+            }
+            100% {
+                box-shadow: 0 0 8px rgba(33, 150, 243, 0.4);
+            }
+        }
+        
+        #bankButton.glow {
+            animation: bluePulse 2s infinite ease-in-out;
+        }
+        /* Properties Button Style */
+        /* 1. Stylish Button Design */
+        
+        .btn-properties {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            /* Purple Gradient */
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            /* Pill shape */
+            font-size: 12px;
+            margin-top: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-properties:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-properties:active {
+            transform: translateY(0);
+        }
+        /* 2. Seller Dropdown Menu (Chotta Modal) */
+        
+        .seller-menu {
+            position: absolute;
+            top: 100%;
+            /* Button ke bilkul niche */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 220px;
+            /* Chotta size */
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            z-index: 1000;
+            border: 1px solid #e2e8f0;
+            animation: fadeIn 0.2s ease-out;
+        }
+        /* Menu Items */
+        
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 11px;
+            color: #333;
+        }
+        
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+        
+        .btn-menu-sell {
+            background-color: #e53e3e;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            cursor: pointer;
+        }
+        
+        .btn-menu-sell:hover {
+            background-color: #c53030;
+        }
+        /* 3. Buyer Modal (Center Compact) */
+        
+        .compact-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            /* Dim background only for buyer */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        
+        .compact-modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            width: 300px;
+            /* Fixed small width */
+            text-align: center;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-action-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .btn-confirm {
+            background-color: #48bb78;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .btn-cancel {
+            background-color: #a0aec0;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -10px);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+        }
+        
+        .modal {
+            /* Existing modal styles */
+            /* ... */
+            will-change: transform, opacity, visibility;
+            /* Add this line */
+            transition: opacity 0.3s ease-in-out;
+            /* Agar aap transition use kar rahe hain */
+        }
+        /* Button IDs: Assuming aapke move buttons ke IDs hain: btnMove1 aur btnMove2 */
+        /* Default/Active state: Aapke existing styles */
+        
+        #btnMove1,
+        #btnMove2 {
+            /* ... (Existing styles here) ... */
+            transition: background-color 0.3s;
+        }
+        /* Inactive/Darkened state */
+        
+        .inactive-turn {
+            background-color: #718096 !important;
+            /* Gray/Dark color */
+            color: #a0aec0 !important;
+            /* Lighter text color */
+            cursor: not-allowed !important;
+            /* Mouse cursor change */
+            box-shadow: none !important;
+        }
+        /* Active state (Optional, to ensure current player button stands out) */
+        
+        .active-turn {
+            /* Agar aapne koi default gradient ya color rakha hai to wo yahan rakhein */
+            background-color: #38a169 !important;
+            /* Example Green */
+            color: white !important;
+            cursor: pointer !important;
+            /* Add a subtle glow/shadow to highlight */
+            box-shadow: 0 0 10px rgba(56, 161, 105, 0.5);
+        }
+        
+        .inactive-turn {
+            background-color: #616161 !important;
+            color: #bdbdbd !important;
+            cursor: not-allowed !important;
+        }
+        
+        .active-turn {
+            background-color: #4CAF50 !important;
+            color: white !important;
+            cursor: pointer !important;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen p-4 md:p-8">
+
+    <header class="game-header" style="background: none; gap: 256px; margin-top: -38px;">
+
+        <div style="position: relative;">
+            <h2 id="player1Name">Player 1</h2>
+            <p id="player1Cash" style="text-align: center;">$1500</p>
+            <button id="btnP1Prop" class="btn-properties" onclick="game.openSellMenu(0, this)">My Properties ▾</button>
+            <div id="p1MenuContainer"></div>
+        </div>
+
+        <div style="position: relative;">
+            <h2 id="player2Name">Player 2</h2>
+            <p id="player2Cash" style="text-align: center;">$1500</p>
+            <button id="btnP2Prop" class="btn-properties" onclick="game.openSellMenu(1, this)">My Properties ▾</button>
+            <div id="p2MenuContainer"></div>
+        </div>
+
+    </header>
+
+
+
+    <div class="main-layout">
+        <aside class="sidebar sidebar-right">
+            <p>Waiting for toss...</p>
+        </aside>
+
+        <main class="board-container-wrap" style="display: flex; justify-content: center; align-items: center;  margin-bottom: 30px;margin-top: -92px;   ">
+            <div class="board-container">
+
+                <div class="human corner bottom-right">
+                    <img src="go.jpeg" style="height: 100%; width: 100%;" alt="Start point, Collect $1500 salary">
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+
+
+                </div>
+
+                <div class="human side-space-horizontal" style="position: relative;" alt="Mediterranean Ave" id="mediterranean">
+                    <div class="color-bar brown"></div>
+                    <span class="font-bold" style="font-size: 7px; margin-top: 0px;">Mediterranean Ave.</span>
+                    <span style="margin-bottom: 10px;">$60</span>
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+
+                </div>
+                <div class="human side-space-horizontal">
+                    <img src="community.png" style="height: 90%; width: 90%;" alt="Community Chest card" class="h-5 w-5">
+                    <b style="font-size: 6px;  position: absolute; margin-top: 40px;">Community Chest</b>
+                    <!-- <span class="text-xs" style="margin-bottom: 20px;">Follow Instructions</span> -->
+
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+
+                </div>
+                <div class="human side-space-horizontal">
+                    <div class="color-bar brown"></div>
+                    <span class="font-bold">Baltic Ave.</span>
+                    <span style="margin-bottom: 15px;">$60</span>
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px; " id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px; " id="p2TokenBox" data-player="1"></div>
+
+                </div>
+                <div class="human side-space-horizontal">
+                    <!-- <img src="https://placehold.co/20x20/F7E6A6/1A4D3A?text=Tax" alt="Income Tax square icon" class="h-5 w-5"> -->
+                    <div style="margin-bottom: 20px;">
+                        <span class="font-bold">Income Tax</span>
+                        <div>Pay 10% or $200</div>
+                    </div>
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 3px; left: 4px; width: 44px;  height: 25px; " id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 2px; width: 44px;  height: 25px; " id="p2TokenBox" data-player="1"></div>
+
+                </div>
+                <div class="human side-space-horizontal">
+                    <img src="rail.png" style="height: 80%; width: 80%; margin-top: 10px;" alt="Train for railroad" class="h-5 w-5">
+
+                    <span style="position: absolute; ">$200</span>
+                    <!-- <div class="mt-auto flex-justify-around w-full">
+                        <img src="https://placehold.co/15x15/FF0000/FFFFFF?text=P2" alt="Player 2 token" class="token token-p2">
+                        </div> -->
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+
+                </div>
+                <div class="human side-space-horizontal">
+                    <div class="color-bar light-blue"></div>
+                    <span class="font-bold">Oriental Ave.</span>
+                    <span>$100</span>
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+
+                </div>
+                <div class="human side-space-horizontal">
+                    <img src="chance.png" style="height: 100%; width: 100%;" alt="Chance question mark" class="h-5 w-5">
+                    <!-- <span class="font-bold">Chance</span>
+                        <span class="text-xs">Draw Card</span> -->
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+                </div>
+                <div class="human side-space-horizontal">
+                    <div class="color-bar light-blue"></div>
+                    <span class="font-bold">Vermont Ave.</span>
+                    <span>$100</span>
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+
+                </div>
+                <div class="human side-space-horizontal">
+                    <div class="color-bar light-blue"></div>
+                    <span class="font-bold" style="font-size: 9px;">Connecticut Ave.</span>
+                    <span>$120</span>
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+
+                </div>
+
+                <div class="human side-space-horizonta" style="background-color: white;">
+
+                    <img src="injail.png" style="width: 100%; height: 100%;" alt="Jail cell bars icon">
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+
+
+                </div>
+
+                <div class="human side-space-vertical">
+                    <!-- <div class="color-bar pink"></div> -->
+                    <div>
+                        <span class="font-bold">St. Charles Place</span>
+                        <div>$140</div>
+                    </div>
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+                </div>
+                <div class="human side-space-vertical">
+                    <div>
+                        <img src="bulb.png" style="height: 70%; width: 70%;" alt="Electric lightbulb icon" class="h-5 w-5">
+                        <!-- <span class="font-bold">Electric Company</span> -->
+                        <span>$150</span>
+                    </div>
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+
+                </div>
+                <div class="human side-space-vertical">
+                    <!-- <div class="color-bar pink"></div> -->
+                    <div>
+                        <span class="font-bold">States Ave.</span>
+                        <div>$140</div>
+                    </div>
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+                </div>
+                <div class="human side-space-vertical">
+                    <!-- <div class="color-bar pink"></div> -->
+                    <div>
+                        <span class="font-bold">Virginia Ave.</span>
+                        <div>$160</div>
+                    </div>
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+
+                </div>
+                <div class="human side-space-vertical">
+                    <div>
+                        <img src="rail.png" style="height: 80%; width: 80%; margin-top: 10px; " alt="Train for B&O Railroad" class="h-5 w-5">
+                        <!-- <span class="font-bold"></span> -->
+                        <div style="margin-bottom: 10px; ">$200</div>
+                    </div>
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+
+                </div>
+                <div class="human side-space-vertical">
+                    <!-- <div class="color-bar orange"></div> -->
+                    <div>
+                        <div class="font-bold">St. James Place</div>
+                        <div>$180</div>
+                    </div>
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+                </div>
+                <div class="human side-space-vertical">
+                    <div>
+                        <img src="community.png" style="height: 100%; width: 100%;" alt="Community Chest card" class="h-5 w-5">
+                        <!-- <b style="font-size: 6px; margin-bottom: 10px;">Community Chest</b> -->
+                    </div>
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+
+                </div>
+                <div class="human side-space-vertical">
+                    <!-- <div class="color-bar orange"></div> -->
+                    <div>
+                        <span class="font-bold">Tennessee Ave.</span>
+                        <div>$180</div>
+                    </div>
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+
+                </div>
+                <div class="human side-space-vertical">
+                    <div class="color-bar orange"></div>
+                    <div>
+                        <span class="font-bold">New York Ave.</span>
+                        <div>$200</div>
+                    </div>
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+
+                </div>
+                <!-- --------------------------------- -->
+                <div class="human side-space-horizontal">
+                    <div class="color-bar yellow"></div>
+                    <span class="font-bold">Marvin Gardens</span>
+                    <span>$280</span>
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>>
+
+                </div>
+
+                <div class="human side-space-horizontal">
+                    <div class="color-bar red"></div>
+                    <span class="font-bold">Kentucky Ave.</span>
+                    <span>$220</span>
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+
+                </div>
+                <div class="human side-space-horizontal">
+                    <img src="chance.png" style="width: 100%; height: 100%;" alt="Chance question mark icon" class="h-5 w-5">
+                    <!-- <span class="font-bold">Chance</span>
+                        <span class="text-xs">Draw Card</span> -->
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+                </div>
+                <div class="human side-space-horizontal">
+                    <div class="color-bar red"></div>
+                    <span class="font-bold">Indiana Ave.</span>
+                    <span>$220</span>
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+
+                </div>
+                <div class="human side-space-horizontal">
+                    <div class="color-bar red"></div>
+                    <span class="font-bold">Illinois Ave.</span>
+                    <span>$240</span>
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+
+                </div>
+                <div class="human side-space-horizontal">
+                    <img src="rail.png" style="width: 40%; height: 40%;" alt="Train for B&O Railroad" class="h-5 w-5">
+                    <span class="font-bold">B. & O. Railroad</span>
+                    <span>$200</span>
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+
+                </div>
+                <div class="human side-space-horizontal">
+                    <div class="color-bar yellow"></div>
+                    <span class="font-bold">Atlantic Ave.</span>
+                    <span>$260</span>
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+
+                </div>
+                <div class="human side-space-horizontal">
+                    <div class="color-bar yellow"></div>
+                    <span class="font-bold">Ventnor Ave.</span>
+                    <span>$260</span>
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+
+                </div>
+                <div class="human side-space-horizontal">
+                    <img src="tap.png" style="width: 40%; height: 40%;" alt="Water tap" class="h-5 w-5">
+                    <span class="font-bold">Water Works</span>
+                    <span>$150</span>
+                    <!-- <div class="mt-auto flex-justify-around w-full">
+                            <img src="https://placehold.co/15x15/FF0000/FFFFFF?text=P2" alt="Player 2 token" class="token token-p2">
+                        </div> -->
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+
+                </div>
+                <div class="human corner top-right " style="background-color: #948f7b;">
+                    <!-- <span class="text-xl font-black ">GO TO JAIL</span> -->
+                    <img src="jail.png" style="width: 100%; height: 100%;" alt="Police officer">
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+
+                </div>
+
+
+
+
+                <div class="human side-space-vertical ">
+                    <div>
+                        <div class="color-bar dark-blue "></div>
+                        <span class="font-bold ">Boardwalk</span>
+                        <div>$400</div>
+                    </div>
+                    <!-- <div class="mt-auto flex-justify-around w-full ">
+                            <img src="https://placehold.co/15x15/8B4513/FFFFFF?text=P1 " alt="Player 1 token " class="token token-p1 ">
+                        </div> -->
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+
+                </div>
+
+                <div class="human side-space-vertical ">
+                    <!-- <div class="color-bar green "></div> -->
+                    <div>
+                        <span class="font-bold ">Pacific Ave.</span>
+                        <div>$300</div>
+                    </div>
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+
+                </div>
+                <div class="human side-space-vertical ">
+                    <div>
+                        <!-- <div class="color-bar green "></div> -->
+                        <span class="font-bold ">North Carolina Ave.</span>
+                        <div>$300</div>
+                    </div>
+                    <!-- <div class="mt-auto flex-justify-around w-full ">
+                            <img src="https://placehold.co/15x15/8B4513/FFFFFF?text=P1 " alt="Player 1 token " class="token token-p1 ">
+                        </div> -->
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+
+                </div>
+                <div class="human side-space-vertical ">
+                    <div>
+                        <img src="community.png" style="width: 100%; height: 100%;" alt="Community Chest card" class="h-5 w-5 ">
+                        <!-- <div class="font-bold " style="font-size: 7px;">Community Chest</div> -->
+                    </div>
+                    <!-- <span class="text-xs ">Follow Instructions</span> -->
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+
+                </div>
+                <div class="human side-space-vertical ">
+                    <!-- <div class="color-bar green "></div> -->
+                    <div>
+                        <span class="font-bold " style="font-size: 8px;">Pennsylvania Ave.</span>
+                        <div>$320</div>
+                    </div>
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+
+                </div>
+                <div class="human side-space-vertical ">
+                    <div>
+                        <img src="rail.png" style="height: 50%; width: 50%;" alt="Train for Short Line Railroad " class="h-5 w-5 ">
+                        <div class="font-bold ">Short Line</div>
+                        <div>$200</div>
+                    </div>
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+                </div>
+                <div class="human side-space-vertical ">
+                    <img src="chance.png" style="height: 100%; width: 100%;" alt="Chance question mark" class="h-5 w-5 ">
+                    <!-- <span class="font-bold ">Chance</span>
+                        <span class="text-xs ">Draw Card</span> -->
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+
+                </div>
+                <div class="human side-space-vertical ">
+                    <div>
+                        <!-- <div class="color-bar dark-blue "></div> -->
+                        <span class="font-bold ">Park Place</span>
+                        <div>$350</div>
+                    </div>
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+
+                </div>
+                <div class="human side-space-vertical ">
+                    <div>
+                        <img src="ring.png" style="width: 80%; height: 80%;" alt="Luxury Tax diamond ring" class="h-5 w-5 ">
+                        <!-- <span class="font-bold ">Luxury Tax</span> -->
+                        <div>Pay $100</div>
+                    </div>
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+                </div>
+                <div class="human corner top-left" style="background-color: #bdc224dc;">
+                    <!-- <span class="text-xl font-black ">FREE PARKING</span> -->
+                    <img src="parking.png " style="height: 100%; width: 100%; margin-left: 10px; " alt="Parking lot">
+                    <!--  2 empty absolute portions for tokens for gotiyan -->
+                    <div style="position: absolute; top: 4px; left: 4px; width: 39px;  height: 17px;" id="p1TokenBox" data-player="0"></div>
+                    <div style="position: absolute; top: 24px; right: 4px; width: 39px;  height: 17px;" id="p2TokenBox" data-player="1"></div>
+
+                </div>
+
+
+
+                <div class="center-area ">
+                    <!-- <p>The Fast-Dealing Property Trading Game</p>
+                        <img src="https://placehold.co/200x100/1A4D3A/F7E6A6?text=MONOPOLY+LOGO " alt="Monopoly game logo ">
+                        <p>Current Turn: Player 1</p>
+                        <div class="dice-display ">
+                            <p>Dice: <span>5</span> + <span>2</span> = <span>7</span></p>
+                        </div> -->
+                    <!-- <h1 class="game-title " style="align-content: center; ">
+                            Monopoly
+                        </h1> -->
+                    <img src="monopolylogo.png" style="height: 40%; width: 70%;" alt="Monopoly game" onclick="game.forfeitGame(this)">
+                    <span style="display:block;  color:white; margin-bottom: 20px; font-weight:bold; font-size:9px; text-align:center;">
+    ⚠️ WARNING: Click Monopoly and you loss the game automatically. Click it if you have nothing to do.
+</span>
+
+                    <button id="bankButton">
+                        Bank
+                        </button>
+                    <br>
+
+
+                    <div class="controls" style="gap:150px;">
+                        <button class="btn btn-small" id="move1" onclick="game.toss(0)" style="background-color:rgb(102,213,104);color:#000;font-size:15px;">Move</button>
+                        <button class="btn btn-small" id="move2" onclick="game.toss(1)" style="background-color:rgb(102,213,104);color:#000;font-size:15px;">Move</button>
+                    </div>
+
+                    <div style="font-family: Poppins, sans-serif; text-align: center; margin-top: 40px;">
+                        <h3>🎲 Roll The Dies</h3>
+
+
+                        <div style="margin-bottom: 20px;">
+                            <input id="dice1" type="number" readonly disabled style="width:45px;height:32px;text-align:center;background-color:bisque;font-size:large;color:black;">
+                            <span style="font-weight:bold;">+</span>
+                            <input id="dice2" type="number" readonly disabled style="width:45px;height:32px;text-align:center;background-color:bisque;font-size:large;color:black;">
+                            <span style="font-weight:bold;">=</span>
+                            <input id="result" type="number" readonly disabled style="width:45px;height:32px;font-weight:bold;text-align:center;background-color:bisque;font-size:large;color:black;">
+                        </div>
+                        <br><br>
+
+
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+        <aside class="sidebar sidebar-left">
+            <p>Take your move for toss.</p>
+        </aside>
+    </div>
+    <div id="tokenModal" class="modal">
+        <div class="modal-content" style="background-color: #374151;">
+            <h3 style="color: #000; " style="background-color: #374151;" id="tokenTitle">Choose your token</h3>
+            <div class="token-container " id="tokenContainer">
+
+                <img src="redprawn.png" class="token " data-token="red ">
+                <img src="greenprawn.png" class="token " data-token="green ">
+                <img src="reddpawn.png" class="token " data-token="blue ">
+                <img src="yellowparwns.png" style="height: 10ps;" class="token " data-token="yellow ">
+
+            </div>
+        </div>
+    </div>
+    <div id="propertyModal" class="modal">
+        <div class="modal-content">
+            <span id="closePropertyModal" style="position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; color: #aaa; cursor: pointer; transition: color 0.3s;">&times;</span>
+            <h2 id="propertyName"></h2>
+            <p id="propertyStatus"></p>
+            <div id="propertyButtons">
+                <button id="buyProperty">Buy</button>
+                <button id="payRent">Pay Rent</button>
+
+            </div>
+        </div>
+    </div>
+    <div id="bankModal" class="bank-modal">
+        <div class="bank-modal-content">
+            <h2>Bank</h2>
+            <h3 id="bankBalance">Total Cash: $5000</h3>
+
+            <div class="bank-info-box" id="bankInfoBox">
+                <!-- <p><strong>Rafid Jamil</strong> has taken a loan of <strong>$1000</strong>.</p>
+                <p><strong>Ahmed Alam</strong> has mortgaged <strong>Baltic Avenue</strong>.</p>
+                <p></p>Total Mortgaged Properties: <strong>2</strong></p>
+                <p>Total Loans Given: <strong>1</strong></p> -->
+            </div>
+
+            <button id="closeBankModal">Close</button>
+        </div>
+    </div>
+
+
+
+
+
+</body>
+<script src="./testindex.js"></script>
+
+</html>
